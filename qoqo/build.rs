@@ -106,7 +106,7 @@ impl<'ast> Visit<'ast> for Visitor {
         // Check attributes
         for att in itemstruct.attrs.clone() {
             let path = att.path().get_ident().map(|id| id.to_string());
-            // TOFIX: REMOVE WHEN STABILISED
+            // TEMP: REMOVE WHEN STABILISED
             if matches!(att.style, AttrStyle::Outer)
                 && path == Some("cfg".to_string())
                 && !cfg!(feature = "unstable_operation_definition")
@@ -117,6 +117,22 @@ impl<'ast> Visit<'ast> for Visitor {
                     return;
                 }
             }
+
+            // TEMP: REMOVE WHEN STABILISED
+            if matches!(att.style, AttrStyle::Outer)
+                && path == Some("cfg".to_string())
+                && !cfg!(feature = "unstable_simulation_repetitions")
+            {
+                let cfg_feature_name: CfgFeatureMacroArgument =
+                    att.parse_args().expect("parsing failed 1");
+                if cfg_feature_name
+                    .0
+                    .contains("unstable_simulation_repetitions")
+                {
+                    return;
+                }
+            }
+
             // only consider the wrap attribute, if no derive attribute is present don't add anything
             // to the internal storage of the visitor
             if matches!(att.style, AttrStyle::Outer) && path == Some("wrap".to_string()) {
@@ -134,7 +150,7 @@ impl<'ast> Visit<'ast> for Visitor {
             Some(id) => Some(id.clone()),
             _ => i.path.segments.last().map(|segment| segment.ident.clone()),
         };
-        // TOFIX: REMOVE WHEN STABILISED
+        // TEMP: REMOVE WHEN STABILISED
         if i.tokens.clone().into_iter().any(|tok| {
             tok.to_string().contains("CallDefinedGate")
                 || tok.to_string().contains("DefinitionGate")
@@ -142,6 +158,17 @@ impl<'ast> Visit<'ast> for Visitor {
         {
             return;
         }
+
+        // TEMP: REMOVE WHEN STABILISED
+        if i.tokens
+            .clone()
+            .into_iter()
+            .any(|tok| tok.to_string().contains("PragmaSimulationRepetitions"))
+            && !cfg!(feature = "unstable_simulation_repetitions")
+        {
+            return;
+        }
+
         if let Some(ident) = id {
             if ident.to_string().as_str() == "insert_pyany_to_operation" {
                 self.pyany_to_operation.push(i.tokens.clone())
@@ -271,14 +298,14 @@ fn create_doc(module: &str) -> PyResult<String> {
     let mut main_doc = "".to_owned();
     pyo3::prepare_freethreaded_python();
     Python::with_gil(|py| -> PyResult<String> {
-        let python_module = PyModule::import_bound(py, module)?;
+        let python_module = PyModule::import(py, module)?;
         let dict = python_module.as_ref().getattr("__dict__")?;
         let module_doc = python_module
             .as_ref()
             .getattr("__doc__")?
             .extract::<String>()?;
         let r_dict = dict.downcast::<PyDict>()?;
-        for (fn_name, func) in r_dict.iter() {
+        for (fn_name, func) in pyo3::types::PyDictMethods::iter(r_dict) {
             let name = fn_name.str()?.extract::<String>()?;
             if name.starts_with("__")
                 || (module == "qoqo"
@@ -301,11 +328,9 @@ fn create_doc(module: &str) -> PyResult<String> {
                 ));
                 let class_dict = func.getattr("__dict__")?;
                 let items = class_dict.call_method0("items")?;
-                let dict_obj = py
-                    .import_bound("builtins")?
-                    .call_method1("dict", (items,))?;
+                let dict_obj = py.import("builtins")?.call_method1("dict", (items,))?;
                 let class_r_dict = dict_obj.as_ref().downcast::<PyDict>()?;
-                for (class_fn_name, meth) in class_r_dict.iter() {
+                for (class_fn_name, meth) in pyo3::types::PyDictMethods::iter(class_r_dict) {
                     let meth_name = class_fn_name.str()?.extract::<String>()?;
                     let meth_doc = match meth_name.as_str() {
                         "__add__" if name.eq(&"Circuit") => r#"Implement the `+` (__add__) magic method to add two Circuits.
@@ -345,7 +370,7 @@ Raises:
                         }
                         }
                     };
-                    if meth_doc.eq("") {
+                    if meth_doc.is_empty() {
                         continue;
                     }
                     let meth_args =
