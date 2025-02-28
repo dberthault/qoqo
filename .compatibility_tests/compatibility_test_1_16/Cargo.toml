@@ -33,11 +33,7 @@ qoqo_calculator_1_2 = { git = "https://github.com/HQSquantumsimulations/qoqo_cal
 
 [patch.crates-io]
 struqture = { git = "https://github.com/HQSquantumsimulations/struqture" }
-<<<<<<< HEAD
-struqture_1_7 = { git = "https://github.com/HQSquantumsimulations/struqture", package = "struqture", tag = "v1.7.1" }
-=======
 struqture_1_9 = { git = "https://github.com/HQSquantumsimulations/struqture", package = "struqture", tag = "v1.9.2" }
->>>>>>> 56e404e0589448cf1124a996d4243f94a8a688e2
 qoqo_calculator = { git = "https://github.com/HQSquantumsimulations/qoqo_calculator" }
 qoqo_calculator_1_2 = { git = "https://github.com/HQSquantumsimulations/qoqo_calculator", package = "qoqo_calculator", tag = "v1.2.4" }
 
