@@ -236,8 +236,6 @@ fn test_pyo3_new_gate_definition() {
             .unwrap()
             .extract::<GateDefinitionWrapper>(py)
             .unwrap()
-            .into_pyobject(py)
-            .unwrap()
             .unbind()
             .into_any();
 

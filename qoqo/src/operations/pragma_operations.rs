@@ -164,12 +164,7 @@ impl PragmaSetStateVectorWrapper {
     ///     Set[int]: The involved qubits of the PRAGMA operation.
     fn involved_qubits(&self) -> PyObject {
         let pyobject: PyObject = Python::with_gil(|py| -> PyObject {
-            PySet::new(py, ["All"])
-                .unwrap()
-                .into_pyobject(py)
-                .unwrap()
-                .unbind()
-                .into_any()
+            PySet::new(py, ["All"]).unwrap().unbind().into_any()
         });
         pyobject
     }
@@ -455,12 +450,7 @@ impl PragmaSetDensityMatrixWrapper {
     ///     Set[int]: The involved qubits of the PRAGMA operation.
     fn involved_qubits(&self) -> PyObject {
         let pyobject: PyObject = Python::with_gil(|py| -> PyObject {
-            PySet::new(py, ["All"])
-                .unwrap()
-                .into_pyobject(py)
-                .unwrap()
-                .unbind()
-                .into_any()
+            PySet::new(py, ["All"]).unwrap().unbind().into_any()
         });
         pyobject
     }
@@ -1165,8 +1155,6 @@ impl PragmaGeneralNoiseWrapper {
         let pyobject: PyObject = Python::with_gil(|py| -> PyObject {
             PySet::new(py, [*self.internal.qubit()])
                 .unwrap()
-                .into_pyobject(py)
-                .unwrap()
                 .unbind()
                 .into_any()
         });
@@ -1463,12 +1451,7 @@ impl PragmaChangeDeviceWrapper {
     ///     Set[int]: The involved qubits of the PRAGMA operation.
     fn involved_qubits(&self) -> PyObject {
         let pyobject: PyObject = Python::with_gil(|py| -> PyObject {
-            PySet::new(py, ["All"])
-                .unwrap()
-                .into_pyobject(py)
-                .unwrap()
-                .unbind()
-                .into_any()
+            PySet::new(py, ["All"]).unwrap().unbind().into_any()
         });
         pyobject
     }
