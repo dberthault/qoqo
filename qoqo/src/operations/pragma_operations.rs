@@ -93,7 +93,7 @@ insert_operation_to_pyobject!(
         {
             let pyref: Py<PragmaSetStateVectorWrapper> =
                 Py::new(py, PragmaSetStateVectorWrapper { internal }).unwrap();
-            let pyobject: PyObject = pyref.to_object(py);
+            let pyobject: PyObject = pyref.into_pyobject(py).unwrap().unbind().into_any();
             Ok(pyobject)
         }
     }
@@ -163,8 +163,14 @@ impl PragmaSetStateVectorWrapper {
     /// Returns:
     ///     Set[int]: The involved qubits of the PRAGMA operation.
     fn involved_qubits(&self) -> PyObject {
-        let pyobject: PyObject =
-            Python::with_gil(|py| -> PyObject { PySet::new(py, ["All"]).unwrap().to_object(py) });
+        let pyobject: PyObject = Python::with_gil(|py| -> PyObject {
+            PySet::new(py, ["All"])
+                .unwrap()
+                .into_pyobject(py)
+                .unwrap()
+                .unbind()
+                .into_any()
+        });
         pyobject
     }
 
@@ -377,7 +383,7 @@ insert_operation_to_pyobject!(
         {
             let pyref: Py<PragmaSetDensityMatrixWrapper> =
                 Py::new(py, PragmaSetDensityMatrixWrapper { internal }).unwrap();
-            let pyobject: PyObject = pyref.to_object(py);
+            let pyobject: PyObject = pyref.into_pyobject(py).unwrap().unbind().into_any();
             Ok(pyobject)
         }
     }
@@ -448,8 +454,14 @@ impl PragmaSetDensityMatrixWrapper {
     /// Returns:
     ///     Set[int]: The involved qubits of the PRAGMA operation.
     fn involved_qubits(&self) -> PyObject {
-        let pyobject: PyObject =
-            Python::with_gil(|py| -> PyObject { PySet::new(py, ["All"]).unwrap().to_object(py) });
+        let pyobject: PyObject = Python::with_gil(|py| -> PyObject {
+            PySet::new(py, ["All"])
+                .unwrap()
+                .into_pyobject(py)
+                .unwrap()
+                .unbind()
+                .into_any()
+        });
         pyobject
     }
 
@@ -1040,7 +1052,7 @@ insert_operation_to_pyobject!(
         {
             let pyref: Py<PragmaGeneralNoiseWrapper> =
                 Py::new(py, PragmaGeneralNoiseWrapper { internal }).unwrap();
-            let pyobject: PyObject = pyref.to_object(py);
+            let pyobject: PyObject = pyref.into_pyobject(py).unwrap().unbind().into_any();
             Ok(pyobject)
         }
     }
@@ -1153,7 +1165,10 @@ impl PragmaGeneralNoiseWrapper {
         let pyobject: PyObject = Python::with_gil(|py| -> PyObject {
             PySet::new(py, [*self.internal.qubit()])
                 .unwrap()
-                .to_object(py)
+                .into_pyobject(py)
+                .unwrap()
+                .unbind()
+                .into_any()
         });
         pyobject
     }
@@ -1393,7 +1408,7 @@ insert_operation_to_pyobject!(
         {
             let pyref: Py<PragmaChangeDeviceWrapper> =
                 Py::new(py, PragmaChangeDeviceWrapper { internal }).unwrap();
-            let pyobject: PyObject = pyref.to_object(py);
+            let pyobject: PyObject = pyref.into_pyobject(py).unwrap().unbind().into_any();
             Ok(pyobject)
         }
     }
@@ -1447,8 +1462,14 @@ impl PragmaChangeDeviceWrapper {
     /// Returns:
     ///     Set[int]: The involved qubits of the PRAGMA operation.
     fn involved_qubits(&self) -> PyObject {
-        let pyobject: PyObject =
-            Python::with_gil(|py| -> PyObject { PySet::new(py, ["All"]).unwrap().to_object(py) });
+        let pyobject: PyObject = Python::with_gil(|py| -> PyObject {
+            PySet::new(py, ["All"])
+                .unwrap()
+                .into_pyobject(py)
+                .unwrap()
+                .unbind()
+                .into_any()
+        });
         pyobject
     }
 
@@ -1662,7 +1683,7 @@ insert_operation_to_pyobject!(
         {
             let pyref: Py<PragmaAnnotatedOpWrapper> =
                 Py::new(py, PragmaAnnotatedOpWrapper { internal }).unwrap();
-            let pyobject: PyObject = pyref.to_object(py);
+            let pyobject: PyObject = pyref.into_pyobject(py).unwrap().unbind().into_any();
             Ok(pyobject)
         }
     }
@@ -1709,30 +1730,28 @@ impl PragmaAnnotatedOpWrapper {
     /// Returns:
     ///     Set[int]: The involved qubits of the PRAGMA operation.
     fn involved_qubits(&self) -> PyObject {
-        Python::with_gil(|py| -> PyObject {
+        Python::with_gil(|py| -> Py<PySet> {
             let involved = self.internal.involved_qubits();
             match involved {
                 InvolvedQubits::All => {
-                    let pyref: &Bound<PySet> = &PySet::new(py, ["All"]).unwrap();
-                    let pyobject: PyObject = pyref.as_any().to_object(py);
-                    pyobject
+                    let pyref: Bound<PySet> = PySet::new(py, ["All"]).unwrap();
+                    pyref.unbind()
                 }
                 InvolvedQubits::None => {
-                    let pyref: &Bound<PySet> = &PySet::empty(py).unwrap();
-                    let pyobject: PyObject = pyref.as_any().to_object(py);
-                    pyobject
+                    let pyref: Bound<PySet> = PySet::empty(py).unwrap();
+                    pyref.unbind()
                 }
                 InvolvedQubits::Set(x) => {
                     let mut vector: Vec<usize> = Vec::new();
                     for mode in x {
                         vector.push(mode)
                     }
-                    let pyref: &Bound<PySet> = &PySet::new(py, &vector[..]).unwrap();
-                    let pyobject: PyObject = pyref.as_any().to_object(py);
-                    pyobject
+                    let pyref: Bound<PySet> = PySet::new(py, &vector[..]).unwrap();
+                    pyref.unbind()
                 }
             }
         })
+        .into()
     }
 
     /// Return tags classifying the type of the operation.

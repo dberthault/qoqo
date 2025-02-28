@@ -144,7 +144,7 @@ impl QuantumProgramWrapper {
                     },
                 )
                 .unwrap();
-                pyref.to_object(py)
+                pyref.into_pyobject(py).unwrap().unbind().into_any()
             }),
             QuantumProgram::CheatedPauliZProduct {
                 measurement,
@@ -157,7 +157,7 @@ impl QuantumProgramWrapper {
                     },
                 )
                 .unwrap();
-                pyref.to_object(py)
+                pyref.into_pyobject(py).unwrap().unbind().into_any()
             }),
             QuantumProgram::Cheated {
                 measurement,
@@ -170,7 +170,7 @@ impl QuantumProgramWrapper {
                     },
                 )
                 .unwrap();
-                pyref.to_object(py)
+                pyref.into_pyobject(py).unwrap().unbind().into_any()
             }),
             QuantumProgram::ClassicalRegister {
                 measurement,
@@ -183,7 +183,7 @@ impl QuantumProgramWrapper {
                     },
                 )
                 .unwrap();
-                pyref.to_object(py)
+                pyref.into_pyobject(py).unwrap().unbind().into_any()
             }),
             _ => panic!("Unknown type of QuantumProgram"),
         }

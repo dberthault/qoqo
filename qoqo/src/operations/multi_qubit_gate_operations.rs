@@ -109,7 +109,7 @@ insert_operation_to_pyobject!(
         {
             let pyref: Py<CallDefinedGateWrapper> =
                 Py::new(py, CallDefinedGateWrapper { internal }).unwrap();
-            let pyobject: PyObject = pyref.to_object(py);
+            let pyobject: PyObject = pyref.into_pyobject(py).unwrap().unbind().into_any();
             Ok(pyobject)
         }
     }
@@ -188,7 +188,10 @@ impl CallDefinedGateWrapper {
         let pyobject: PyObject = Python::with_gil(|py| -> PyObject {
             PySet::new(py, &[self.internal.qubits().clone()])
                 .unwrap()
-                .to_object(py)
+                .into_pyobject(py)
+                .unwrap()
+                .unbind()
+                .into_any()
         });
         pyobject
     }

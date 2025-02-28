@@ -19,7 +19,7 @@ use crate::{QoqoError, QOQO_VERSION};
 use bincode::{deserialize, serialize};
 use pyo3::exceptions::{PyIndexError, PyTypeError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::PyByteArray;
+use pyo3::types::{PyByteArray, PyDict};
 use roqoqo::{Circuit, CircuitDag, ROQOQO_VERSION};
 
 use crate::operations::{convert_operation_to_pyobject, convert_pyany_to_operation};
@@ -402,11 +402,14 @@ impl CircuitDagWrapper {
     ///     Dict[int, int]: The dictionary of {qubit: node} elements.
     #[pyo3(text_signature = "($self)")]
     pub fn first_operation_involving_qubit(&self) -> PyObject {
-        Python::with_gil(|py| -> PyObject {
+        Python::with_gil(|py| -> Py<PyDict> {
             self.internal
                 .first_operation_involving_qubit()
-                .to_object(py)
+                .into_pyobject(py)
+                .unwrap()
+                .unbind()
         })
+        .into()
     }
 
     /// Returns a dictionary where a key represents a qubit and its value represents
@@ -416,9 +419,14 @@ impl CircuitDagWrapper {
     ///     Dict[int, int]: The dictionary of {qubit: node} elements.
     #[pyo3(text_signature = "($self)")]
     pub fn last_operation_involving_qubit(&self) -> PyObject {
-        Python::with_gil(|py| -> PyObject {
-            self.internal.last_operation_involving_qubit().to_object(py)
+        Python::with_gil(|py| -> Py<PyDict> {
+            self.internal
+                .last_operation_involving_qubit()
+                .into_pyobject(py)
+                .unwrap()
+                .unbind()
         })
+        .into()
     }
 
     /// Returns a dictionary where a key is composed by the name and the size
@@ -429,11 +437,14 @@ impl CircuitDagWrapper {
     ///     Dict[(str, int), int]: The dictionary of {(str, int), int} elements.
     #[pyo3(text_signature = "($self)")]
     pub fn first_operation_involving_classical(&self) -> PyObject {
-        Python::with_gil(|py| -> PyObject {
+        Python::with_gil(|py| -> Py<PyDict> {
             self.internal
                 .first_operation_involving_classical()
-                .to_object(py)
+                .into_pyobject(py)
+                .unwrap()
+                .unbind()
         })
+        .into()
     }
 
     /// Returns a dictionary where a key is composed by the name and the size
@@ -444,11 +455,14 @@ impl CircuitDagWrapper {
     ///     Dict[(str, int), int]: The dictionary of {(str, int), int} elements.
     #[pyo3(text_signature = "($self)")]
     pub fn last_operation_involving_classical(&self) -> PyObject {
-        Python::with_gil(|py| -> PyObject {
+        Python::with_gil(|py| -> Py<PyDict> {
             self.internal
                 .last_operation_involving_classical()
-                .to_object(py)
+                .into_pyobject(py)
+                .unwrap()
+                .unbind()
         })
+        .into()
     }
 }
 

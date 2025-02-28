@@ -128,7 +128,7 @@ impl DecoherenceOnGateModelWrapper {
                     let pmlno = struqture_py::spins::PlusMinusLindbladNoiseOperatorWrapper {
                         internal: struqture_obj.clone(),
                     };
-                    Some(pmlno.into_py(py))
+                    Some(pmlno.into_pyobject(py).unwrap().unbind().into_any())
                 }
             }),
             None => None,
@@ -211,7 +211,7 @@ impl DecoherenceOnGateModelWrapper {
                     let pmlno = struqture_py::spins::PlusMinusLindbladNoiseOperatorWrapper {
                         internal: struqture_obj.clone(),
                     };
-                    Some(pmlno.into_py(py))
+                    Some(pmlno.into_pyobject(py).unwrap().unbind().into_any())
                 }
             }),
             None => None,
@@ -299,7 +299,7 @@ impl DecoherenceOnGateModelWrapper {
                     let pmlno = struqture_py::spins::PlusMinusLindbladNoiseOperatorWrapper {
                         internal: struqture_obj.clone(),
                     };
-                    Some(pmlno.into_py(py))
+                    Some(pmlno.into_pyobject(py).unwrap().unbind().into_any())
                 }
             }),
             None => None,
@@ -374,7 +374,7 @@ impl DecoherenceOnGateModelWrapper {
                     let pmlno = struqture_py::spins::PlusMinusLindbladNoiseOperatorWrapper {
                         internal: struqture_obj.clone(),
                     };
-                    Some(pmlno.into_py(py))
+                    Some(pmlno.into_pyobject(py).unwrap().unbind().into_any())
                 }
             }),
             None => None,

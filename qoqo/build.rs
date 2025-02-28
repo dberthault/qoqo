@@ -515,19 +515,18 @@ fn main() {
                 }
             });
 
-    let operation_to_pyobject_quotes =
-        vis.info_wrap
-            .into_iter()
-            .map(|(ident, wrapper_ident, _field_information)| {
-                quote! {
-                    Operation::#ident(internal) => {
-                        let pyref: Py<#wrapper_ident> =
-                            Py::new(py, #wrapper_ident { internal }).unwrap();
-                        let pyobject: PyObject = pyref.to_object(py);
-                        Ok(pyobject)
-                    }
+    let operation_to_pyobject_quotes = vis.info_wrap.into_iter().map(
+        |(ident, wrapper_ident, _field_information)| {
+            quote! {
+                Operation::#ident(internal) => {
+                    let pyref: Py<#wrapper_ident> =
+                        Py::new(py, #wrapper_ident { internal }).unwrap();
+                    let pyobject: PyObject = pyref.into_pyobject(py).unwrap().unbind().into_any();
+                    Ok(pyobject)
                 }
-            });
+            }
+        },
+    );
 
     let operation_to_pyobject_injected_quotes: Vec<TokenStream> = vis.operation_to_pyobject;
     let pyany_to_operation_injected_quotes: Vec<TokenStream> = vis.pyany_to_operation;
@@ -538,7 +537,6 @@ fn main() {
         use crate::convert_into_circuit;
         use qoqo_calculator::CalculatorFloat;
         use qoqo_calculator_pyo3::convert_into_calculator_float;
-        use pyo3::conversion::ToPyObject;
         use roqoqo::operations::*;
         use std::collections::HashMap;
         use ndarray::{Array1, Array2};

@@ -243,30 +243,28 @@ impl ControlledSWAPWrapper {
     /// Returns:
     ///     Union[Set[int], str]: The involved qubits as a set or 'ALL' if all qubits are involved
     fn involved_qubits(&self) -> PyObject {
-        Python::with_gil(|py| -> PyObject {
+        Python::with_gil(|py| -> Py<PySet> {
             let involved = self.internal.involved_qubits();
             match involved {
                 InvolvedQubits::All => {
-                    let pyref: &Bound<PySet> = &PySet::new(py, ["All"]).unwrap();
-                    let pyobject: PyObject = pyref.to_object(py);
-                    pyobject
+                    let pyref: Bound<PySet> = PySet::new(py, ["All"]).unwrap();
+                    pyref.unbind()
                 }
                 InvolvedQubits::None => {
-                    let pyref: &Bound<PySet> = &PySet::empty(py).unwrap();
-                    let pyobject: PyObject = pyref.to_object(py);
-                    pyobject
+                    let pyref: Bound<PySet> = PySet::empty(py).unwrap();
+                    pyref.unbind()
                 }
                 InvolvedQubits::Set(x) => {
                     let mut vector: Vec<usize> = Vec::new();
                     for qubit in x {
                         vector.push(qubit)
                     }
-                    let pyref: &Bound<PySet> = &PySet::new(py, &vector[..]).unwrap();
-                    let pyobject: PyObject = pyref.to_object(py);
-                    pyobject
+                    let pyref: Bound<PySet> = PySet::new(py, &vector[..]).unwrap();
+                    pyref.unbind()
                 }
             }
         })
+        .into()
     }
     /// Copies Operation
     ///

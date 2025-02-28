@@ -13,7 +13,6 @@
 #![deny(missing_docs)]
 #![deny(rustdoc::missing_crate_level_docs)]
 #![deny(missing_debug_implementations)]
-// #![allow(deprecated)]
 
 //! Qoqo quantum computing toolkit
 //!

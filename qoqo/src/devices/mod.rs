@@ -57,7 +57,7 @@ impl ChainWithEnvironmentCapsule {
         match implements_protocol {
             Ok(Ok(true)) => Python::with_gil(|py| -> Result<Self, RoqoqoError> {
                 Ok(Self {
-                    internal: python_device.into_py(py),
+                    internal: python_device.into_pyobject(py).unwrap().unbind().into_any(),
                 })
             }),
             _ => Err(RoqoqoError::GenericError {

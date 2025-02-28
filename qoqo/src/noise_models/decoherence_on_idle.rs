@@ -105,7 +105,7 @@ impl DecoherenceOnIdleModelWrapper {
                         self.internal.clone(),
                     ),
                 };
-                pmlno.into_py(py)
+                pmlno.into_pyobject(py).unwrap().unbind().into_any()
             }
         })
     }
